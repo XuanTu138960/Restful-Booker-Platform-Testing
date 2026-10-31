@@ -1,0 +1,107 @@
+[0mnewman[0m
+
+[0mRestful-Booker Platform - Full API Test Suite[0m
+
+□ [0m01 - Authentication Services[0m
+└ [0mTC_API_01: Login Success (Valid Admin Credentials)[0m
+  [90mPOST[39m [90mhttp://localhost:3003/auth/login[39m [90m[200 OK, 466B, 117ms][39m
+[32m  √ [39m [90mStatus code is 200 OK[39m
+[32m  √ [39m [90mResponse time is acceptable (< 500ms)[39m
+[32m  √ [39m [90mResponse returns valid auth token[39m
+
+└ [0mTC_API_02: Login Failed (Wrong Password)[0m
+  [90mPOST[39m [90mhttp://localhost:3003/auth/login[39m [90m[403 Forbidden, 457B, 10ms][39m
+[32m  √ [39m [90mStatus code is 403 Forbidden[39m
+[32m  √ [39m [90mReturns Bad credentials error message[39m
+
+└ [0mTC_API_03: Validate Auth Token[0m
+  [90mPOST[39m [90mhttp://localhost:3003/auth/validate[39m [90m[200 OK, 392B, 7ms][39m
+[32m  √ [39m [90mStatus code is 200 OK[39m
+[32m  √ [39m [90mToken is validated successfully[39m
+
+□ [0m02 - Room Management Services[0m
+└ [0mTC_API_04: Get All Hotel Rooms[0m
+  [90mGET[39m [90mhttp://localhost:3003/room/[39m [90m[200 OK, 1.98kB, 7ms][39m
+[32m  √ [39m [90mStatus code is 200 OK[39m
+[32m  √ [39m [90mRooms array is present and not empty[39m
+[32m  √ [39m [90mFirst room has valid structure[39m
+
+└ [0mTC_API_05: Get Single Room By ID[0m
+  [90mGET[39m [90mhttp://localhost:3003/room/1[39m [90m[200 OK, 745B, 5ms][39m
+[32m  √ [39m [90mStatus code is 200 OK[39m
+[32m  √ [39m [90mRoom data matches requested ID[39m
+
+└ [0mTC_API_06: Create New Room (Admin Authorized)[0m
+  [90mPOST[39m [90mhttp://localhost:3003/room/[39m [90m[201 Created, 684B, 7ms][39m
+[32m  √ [39m [90mStatus code is 201 Created[39m
+[32m  √ [39m [90mCreated room contains ID and correct details[39m
+
+└ [0mTC_API_07: Create Room Without Token (Negative - 403 Forbidden)[0m
+  [90mPOST[39m [90mhttp://localhost:3003/room/[39m [90m[403 Forbidden, 420B, 6ms][39m
+[32m  √ [39m [90mStatus code is 403 Forbidden[39m
+
+□ [0m03 - Booking Services[0m
+└ [0mTC_API_08: Get All Bookings[0m
+  [90mGET[39m [90mhttp://localhost:3003/booking/[39m [90m[200 OK, 604B, 5ms][39m
+[32m  √ [39m [90mStatus code is 200 OK[39m
+[32m  √ [39m [90mBookings array is present[39m
+
+└ [0mTC_API_09: Create Booking Success (Valid Information)[0m
+  [90mPOST[39m [90mhttp://localhost:3003/booking/[39m [90m[201 Created, 621B, 6ms][39m
+[32m  √ [39m [90mStatus code is 201 Created[39m
+[32m  √ [39m [90mBooking confirmation contains ID and customer data[39m
+
+└ [0mTC_API_10: Create Booking Missing Required Fields (Negative - 400 Bad Request)[0m
+  [90mPOST[39m [90mhttp://localhost:3003/booking/[39m [90m[400 Bad Request, 643B, 6ms][39m
+[32m  √ [39m [90mStatus code is 400 Bad Request[39m
+[32m  √ [39m [90mReturns error list with validation explanations[39m
+
+└ [0mTC_API_11: Create Booking Duplicate Dates (Conflict - 409 Conflict)[0m
+  [90mPOST[39m [90mhttp://localhost:3003/booking/[39m [90m[409 Conflict, 465B, 6ms][39m
+[32m  √ [39m [90mStatus code is 409 Conflict[39m
+[32m  √ [39m [90mReturns booking conflict message[39m
+
+□ [0m04 - Contact Message & Report Services[0m
+└ [0mTC_API_12: Send Customer Contact Message Success[0m
+  [90mPOST[39m [90mhttp://localhost:3003/message/[39m [90m[201 Created, 615B, 5ms][39m
+[32m  √ [39m [90mStatus code is 201 Created[39m
+[32m  √ [39m [90mMessage created and returns ID[39m
+
+└ [0mTC_API_13: Send Message Invalid Format (Negative - 400 Bad Request)[0m
+  [90mPOST[39m [90mhttp://localhost:3003/message/[39m [90m[400 Bad Request, 620B, 6ms][39m
+[32m  √ [39m [90mStatus code is 400 Bad Request[39m
+
+└ [0mTC_API_14: Get All Messages (Admin Authorized)[0m
+  [90mGET[39m [90mhttp://localhost:3003/message/[39m [90m[200 OK, 873B, 5ms][39m
+[32m  √ [39m [90mStatus code is 200 OK[39m
+[32m  √ [39m [90mMessages list is returned[39m
+
+└ [0mTC_API_15: Get Hotel Branding Info[0m
+  [90mGET[39m [90mhttp://localhost:3003/branding/[39m [90m[200 OK, 884B, 5ms][39m
+[32m  √ [39m [90mStatus code is 200 OK[39m
+[32m  √ [39m [90mContains hotel name and contact address[39m
+
+└ [0mTC_API_16: Get Hotel Statistics Report[0m
+  [90mGET[39m [90mhttp://localhost:3003/report/[39m [90m[200 OK, 431B, 4ms][39m
+[32m  √ [39m [90mStatus code is 200 OK[39m
+[32m  √ [39m [90mReport contains core metrics[39m
+
+[90m┌─────────────────────────[39m[90m┬───────────────────[39m[90m┬──────────────────┐[39m
+[90m│[39m                         [90m│[39m          executed [90m│[39m           failed [90m│[39m
+[90m├─────────────────────────[39m[90m┼───────────────────[39m[90m┼──────────────────┤[39m
+[90m│[39m              [32miterations[39m [90m│[39m                 1 [90m│[39m                0 [90m│[39m
+[90m├─────────────────────────[39m[90m┼───────────────────[39m[90m┼──────────────────┤[39m
+[90m│[39m                [32mrequests[39m [90m│[39m                16 [90m│[39m                0 [90m│[39m
+[90m├─────────────────────────[39m[90m┼───────────────────[39m[90m┼──────────────────┤[39m
+[90m│[39m            [32mtest-scripts[39m [90m│[39m                16 [90m│[39m                0 [90m│[39m
+[90m├─────────────────────────[39m[90m┼───────────────────[39m[90m┼──────────────────┤[39m
+[90m│[39m      [32mprerequest-scripts[39m [90m│[39m                 1 [90m│[39m                0 [90m│[39m
+[90m├─────────────────────────[39m[90m┼───────────────────[39m[90m┼──────────────────┤[39m
+[90m│[39m              [32massertions[39m [90m│[39m                32 [90m│[39m                0 [90m│[39m
+[90m├─────────────────────────┴───────────────────┴──────────────────┤[39m
+[90m│[39m total run duration: 1616ms                                     [90m│[39m
+[90m├────────────────────────────────────────────────────────────────┤[39m
+[90m│[39m total data received: 5.05kB (approx)                           [90m│[39m
+[90m├────────────────────────────────────────────────────────────────┤[39m
+[90m│[39m average response time: 12ms [min: 4ms, max: 117ms, s.d.: 26ms] [90m│[39m
+[90m└────────────────────────────────────────────────────────────────┘[39m

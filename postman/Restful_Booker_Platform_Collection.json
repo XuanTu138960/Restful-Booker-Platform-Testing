@@ -1,0 +1,592 @@
+{
+  "info": {
+    "_postman_id": "7b2e8f19-4a3d-4e92-a1f7-d0e5b7218901",
+    "name": "Restful-Booker Platform - Full API Test Suite",
+    "description": "Bộ kiểm thử API tự động cho hệ thống Restful-Booker Platform mô phỏng Booking.com.\nĐề tài: Đánh giá và kiểm định chất lượng hệ thống đặt phòng khách sạn mã nguồn mở Restful-booker Platform bằng Postman, JMeter và Selenium.\nSinh viên thực hiện: Nguyễn Xuân Tú (MSV: 23010538).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 - Authentication Services",
+      "item": [
+        {
+          "name": "TC_API_01: Login Success (Valid Admin Credentials)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response time is acceptable (< 500ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "pm.test(\"Response returns valid auth token\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('token');",
+                  "    pm.expect(jsonData.token).to.be.a('string');",
+                  "    pm.expect(jsonData.token.length).to.be.above(5);",
+                  "    pm.environment.set(\"admin_token\", jsonData.token);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "TC_API_02: Login Failed (Wrong Password)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 403 Forbidden\", function () {",
+                  "    pm.response.to.have.status(403);",
+                  "});",
+                  "pm.test(\"Returns Bad credentials error message\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('error');",
+                  "    pm.expect(jsonData.error).to.eql('Bad credentials');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"wrong_password_123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "TC_API_03: Validate Auth Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Token is validated successfully\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.token).to.eql(pm.environment.get(\"admin_token\"));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "token", "value": "{{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{admin_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/validate",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "validate"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Room Management Services",
+      "item": [
+        {
+          "name": "TC_API_04: Get All Hotel Rooms",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Rooms array is present and not empty\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('rooms');",
+                  "    pm.expect(jsonData.rooms).to.be.an('array');",
+                  "    pm.expect(jsonData.rooms.length).to.be.above(0);",
+                  "});",
+                  "pm.test(\"First room has valid structure\", function () {",
+                  "    var room = pm.response.json().rooms[0];",
+                  "    pm.expect(room).to.have.property('roomid');",
+                  "    pm.expect(room).to.have.property('roomName');",
+                  "    pm.expect(room).to.have.property('roomPrice');",
+                  "    pm.expect(room.roomPrice).to.be.above(0);",
+                  "    pm.environment.set(\"test_room_id\", room.roomid);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/room/",
+              "host": ["{{baseUrl}}"],
+              "path": ["room", ""]
+            }
+          }
+        },
+        {
+          "name": "TC_API_05: Get Single Room By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Room data matches requested ID\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.roomid).to.eql(parseInt(pm.environment.get(\"test_room_id\")));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/room/{{test_room_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["room", "{{test_room_id}}"]
+            }
+          }
+        },
+        {
+          "name": "TC_API_06: Create New Room (Admin Authorized)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "var randomNum = Math.floor(Math.random() * 900) + 100;",
+                  "pm.environment.set(\"new_room_name\", \"Room \" + randomNum + \" - Luxury Panorama\");"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"Created room contains ID and correct details\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('roomid');",
+                  "    pm.expect(jsonData.roomName).to.eql(pm.environment.get(\"new_room_name\"));",
+                  "    pm.expect(jsonData.roomPrice).to.eql(180);",
+                  "    pm.environment.set(\"created_room_id\", jsonData.roomid);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "token", "value": "{{admin_token}}" },
+              { "key": "Authorization", "value": "{{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomName\": \"{{new_room_name}}\",\n  \"type\": \"Suite\",\n  \"accessible\": true,\n  \"description\": \"Phòng kiểm thử tự động với tầm nhìn đẹp.\",\n  \"features\": [\"WiFi\", \"TV\", \"Safe\", \"Bathtub\"],\n  \"roomPrice\": 180\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/room/",
+              "host": ["{{baseUrl}}"],
+              "path": ["room", ""]
+            }
+          }
+        },
+        {
+          "name": "TC_API_07: Create Room Without Token (Negative - 403 Forbidden)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 403 Forbidden\", function () {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-test-unauthorized", "value": "true" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomName\": \"Unauthorized Room\",\n  \"type\": \"Single\",\n  \"roomPrice\": 100\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/room/",
+              "host": ["{{baseUrl}}"],
+              "path": ["room", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Booking Services",
+      "item": [
+        {
+          "name": "TC_API_08: Get All Bookings",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Bookings array is present\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('bookings');",
+                  "    pm.expect(jsonData.bookings).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/booking/",
+              "host": ["{{baseUrl}}"],
+              "path": ["booking", ""]
+            }
+          }
+        },
+        {
+          "name": "TC_API_09: Create Booking Success (Valid Information)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"Booking confirmation contains ID and customer data\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('bookingid');",
+                  "    pm.expect(jsonData.booking.firstname).to.eql(\"Nguyen\");",
+                  "    pm.expect(jsonData.booking.lastname).to.eql(\"Xuan Tu\");",
+                  "    pm.expect(jsonData.booking.totalprice).to.be.above(0);",
+                  "    pm.environment.set(\"created_booking_id\", jsonData.bookingid);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomid\": 2,\n  \"firstname\": \"Nguyen\",\n  \"lastname\": \"Xuan Tu\",\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-12-01\",\n    \"checkout\": \"2026-12-05\"\n  },\n  \"email\": \"23010538@st.phenikaa-uni.edu.vn\",\n  \"phone\": \"0987654321\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/booking/",
+              "host": ["{{baseUrl}}"],
+              "path": ["booking", ""]
+            }
+          }
+        },
+        {
+          "name": "TC_API_10: Create Booking Missing Required Fields (Negative - 400 Bad Request)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400 Bad Request\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Returns error list with validation explanations\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('errors');",
+                  "    pm.expect(jsonData.errors).to.be.an('array');",
+                  "    pm.expect(jsonData.errors.length).to.be.above(0);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomid\": 2,\n  \"firstname\": \"\",\n  \"lastname\": \"\",\n  \"email\": \"invalid-email-format\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/booking/",
+              "host": ["{{baseUrl}}"],
+              "path": ["booking", ""]
+            }
+          }
+        },
+        {
+          "name": "TC_API_11: Create Booking Duplicate Dates (Conflict - 409 Conflict)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 409 Conflict\", function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});",
+                  "pm.test(\"Returns booking conflict message\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('error');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomid\": 2,\n  \"firstname\": \"Customer\",\n  \"lastname\": \"Duplicate\",\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-12-02\",\n    \"checkout\": \"2026-12-04\"\n  },\n  \"email\": \"customer2@example.com\",\n  \"phone\": \"0911223344\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/booking/",
+              "host": ["{{baseUrl}}"],
+              "path": ["booking", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Contact Message & Report Services",
+      "item": [
+        {
+          "name": "TC_API_12: Send Customer Contact Message Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"Message created and returns ID\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData.subject).to.eql(\"Hoi ve checkin som\");",
+                  "    pm.environment.set(\"created_msg_id\", jsonData.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Nguyen Xuan Tu\",\n  \"email\": \"23010538@st.phenikaa-uni.edu.vn\",\n  \"phone\": \"0987654321\",\n  \"subject\": \"Hoi ve checkin som\",\n  \"description\": \"Chung toi muon check-in som vao luc 10h sang duoc khong?\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/message/",
+              "host": ["{{baseUrl}}"],
+              "path": ["message", ""]
+            }
+          }
+        },
+        {
+          "name": "TC_API_13: Send Message Invalid Format (Negative - 400 Bad Request)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400 Bad Request\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"A\",\n  \"email\": \"invalidemail\",\n  \"phone\": \"123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/message/",
+              "host": ["{{baseUrl}}"],
+              "path": ["message", ""]
+            }
+          }
+        },
+        {
+          "name": "TC_API_14: Get All Messages (Admin Authorized)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Messages list is returned\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('messages');",
+                  "    pm.expect(jsonData.messages).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "token", "value": "{{admin_token}}" },
+              { "key": "Authorization", "value": "{{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/message/",
+              "host": ["{{baseUrl}}"],
+              "path": ["message", ""]
+            }
+          }
+        },
+        {
+          "name": "TC_API_15: Get Hotel Branding Info",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Contains hotel name and contact address\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('name');",
+                  "    pm.expect(jsonData).to.have.property('contact');",
+                  "    pm.expect(jsonData.contact).to.have.property('address');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/branding/",
+              "host": ["{{baseUrl}}"],
+              "path": ["branding", ""]
+            }
+          }
+        },
+        {
+          "name": "TC_API_16: Get Hotel Statistics Report",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Report contains core metrics\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('totalRooms');",
+                  "    pm.expect(jsonData).to.have.property('totalBookings');",
+                  "    pm.expect(jsonData.totalRooms).to.be.at.least(1);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/report/",
+              "host": ["{{baseUrl}}"],
+              "path": ["report", ""]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

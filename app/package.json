@@ -1,0 +1,19 @@
+{
+  "name": "restful-booker-platform-mock",
+  "version": "1.0.0",
+  "description": "Restful-Booker Platform Spring Boot REST API & Booking.com UI Simulation",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "restful-booker",
+    "qa",
+    "testing",
+    "postman",
+    "jmeter",
+    "selenium"
+  ],
+  "author": "Nguyen Xuan Tu (23010538)",
+  "license": "MIT"
+}
