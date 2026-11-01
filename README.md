@@ -4,7 +4,7 @@
 
 ---
 
-## 📌 THÔNG TIN SINH VIÊN THỰC HIỆN
+##  THÔNG TIN SINH VIÊN THỰC HIỆN
 
 - **Họ và tên:** Nguyễn Xuân Tú
 - **Mã sinh viên:** 23010538
@@ -14,7 +14,7 @@
 
 ---
 
-## 📖 MÔ TẢ ĐỀ TÀI & BỐI CẢNH NGHIÊN CỨU
+##  MÔ TẢ ĐỀ TÀI & BỐI CẢNH NGHIÊN CỨU
 
 Các hệ thống đặt phòng trực tuyến (Online Travel Agency - OTA) như **Booking.com**, **Agoda** sở hữu các luồng nghiệp vụ thiết yếu:
 1. **Đặt phòng trực tuyến (Room Booking Flow):** Chọn ngày check-in/check-out, kiểm tra phòng trống, tính tổng tiền, đặt phòng và phòng chống trùng lặp lịch (Overbooking).
@@ -35,7 +35,7 @@ Kiến trúc này cho phép áp dụng đồng thời và toàn diện **3 công
 
 ---
 
-## 🏛️ KIẾN TRÚC HỆ THỐNG & MÔ HÌNH KIỂM THỬ
+##  KIẾN TRÚC HỆ THỐNG & MÔ HÌNH KIỂM THỬ
 
 ```mermaid
 flowchart TD
@@ -65,7 +65,7 @@ flowchart TD
 
 ---
 
-## 📁 CẤU TRÚC KHO LƯU TRỮ (REPOSITORY STRUCTURE)
+##  CẤU TRÚC KHO LƯU TRỮ (REPOSITORY STRUCTURE)
 
 ```
 Restful-Booker-Platform-Testing/
@@ -119,7 +119,7 @@ Restful-Booker-Platform-Testing/
 
 ---
 
-## 🚀 HƯỚNG DẪN CÀI ĐẶT VÀ CHẠY KIỂM THỬ
+##  HƯỚNG DẪN CÀI ĐẶT VÀ CHẠY KIỂM THỬ
 
 ### 1. Yêu cầu môi trường (Prerequisites)
 - **Node.js** (v18+) để chạy máy chủ Restful-Booker Platform.
@@ -192,7 +192,7 @@ pytest tests/ -v --html=reports/selenium_report.html --self-contained-html
 
 ---
 
-## 📊 TỔNG HỢP KẾT QUẢ KIỂM ĐỊNH CHẤT LƯỢNG
+##  TỔNG HỢP KẾT QUẢ KIỂM ĐỊNH CHẤT LƯỢNG
 
 | Công cụ kiểm thử | Số kịch bản / Yêu cầu | Tỷ lệ Đạt (Passed Rate) | Chỉ số chất lượng chính | Trạng thái |
 |---|---|---|---|---|
@@ -202,7 +202,7 @@ pytest tests/ -v --html=reports/selenium_report.html --self-contained-html
 
 ---
 
-## 📸 HÌNH ẢNH MINH CHỨNG KIỂM THỬ GIAO DIỆN
+##  HÌNH ẢNH MINH CHỨNG KIỂM THỬ GIAO DIỆN
 
 ### 1. Trang chủ và Danh sách phòng (Mô phỏng Booking.com)
 ![TC01 - Danh sách phòng](docs/images/tc01_homepage_rooms_list.png)
